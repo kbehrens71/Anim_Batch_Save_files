@@ -3,7 +3,20 @@
 import maya.cmds
 import os
     
-    
+# set file path
+# bring in anim  
+# attach
+# bake  
+
+anim_number = 0
+next_anim_path = ""
+start_time = 1
+end_time = 400
+
+def get_next_anim_path():
+    anim_number + 1
+    next_anim_path = "/Users/kaitlynbehrens/Documents/kaitlyn_maya_projects/maya_v2/scenes/sample_files/exercise/animations/maya/01_0{0}.ma".format(anim_number)
+
 def create_reference(file_path, ns):
     file_path_dir, file_path_fullname = os.path.split(file_path)
     file_path_name, file_path_ext = os.path.splitext(file_path_fullname)
@@ -22,7 +35,7 @@ def get_joint_name(ns_and_joint):
     ns, joint_name = ns_and_joint.split(":")
     return joint_name
 
-def match_joints():
+def connect_joints():
     for c in char_joints:
         c_joint_name = get_joint_name(c)
         for a in anim_joints:
@@ -38,29 +51,28 @@ def match_joints():
                     maya.cmds.orientConstraint("anim:" + a_joint_name, "character:" + c_joint_name)
            
 
-
 # create new scene
 maya.cmds.file(new = True, force = True)
-anim_number = 1
-char_path = "/Users/kaitlynbehrens/Documents/kaitlyn_maya_projects/maya_v2/scenes/sample_files/exercise/character.mb"
-anim_path = "/Users/kaitlynbehrens/Documents/kaitlyn_maya_projects/maya_v2/scenes/sample_files/exercise/animations/maya/01_0{0}.ma".format(anim_number)
 
 # bring in character
+char_path = "/Users/kaitlynbehrens/Documents/kaitlyn_maya_projects/maya_v2/scenes/sample_files/exercise/character.mb"
 create_reference(char_path, "character")
 
+
+
 # bring in animation
+get_next_anim_path()
+if os.path.exists(next_anim_path):
+    anim_path = next_anim_path
 create_reference(anim_path, "anim")
 
 # attach animation to character
 maya.cmds.parentConstraint("anim:Hips", "character:Reference")
-match_joints()
+connect_joints()
 
 # bake animation onto joints
 #start_time = maya.cmds.playbackOptions(q = True, min = True)
 #end_time = maya.cmds.playbackOptions(q = True, max = True)
-start_time = 1
-end_time = 400
-
 print start_time
 print end_time
 maya.cmds.select(cl = True)
@@ -79,8 +91,12 @@ maya.cmds.bakeResults(
                         controlPoints = False,
                         shape = True
                        )
-                       
+    
+
+                     
 # save file
+
+
 
 for i in anim_joints:
     print i

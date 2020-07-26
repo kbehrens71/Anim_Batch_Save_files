@@ -56,8 +56,13 @@ maya.cmds.parentConstraint("anim:Hips", "character:Reference")
 match_joints()
 
 # bake animation onto joints
-start_time = maya.cmds.playbackOptions(q = True, min = True)
-end_time = maya.cmds.playbackOptions(q = True, max = True)
+#start_time = maya.cmds.playbackOptions(q = True, min = True)
+#end_time = maya.cmds.playbackOptions(q = True, max = True)
+start_time = 1
+end_time = 400
+
+print start_time
+print end_time
 maya.cmds.select(cl = True)
 maya.cmds.select(char_joints)
 maya.cmds.bakeResults(

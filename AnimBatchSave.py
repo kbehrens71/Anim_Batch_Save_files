@@ -7,15 +7,13 @@ import os
 def create_reference(file_path, ns):
     file_path_dir, file_path_fullname = os.path.split(file_path)
     file_path_name, file_path_ext = os.path.splitext(file_path_fullname)
-    if "01" in file_path_name:  # do this a better way
+    if "_" in file_path_name:
         file_path_name = "anim"
     maya.cmds.file(file_path, r = True, ns = file_path_name)
     
 def get_joints_from_namespace(ns):
     return maya.cmds.ls("{0}:*".format(ns), type = "joint")
-    
-start_time = maya.cmds.playbackOptions(q = True, min = True)
-end_time = maya.cmds.playbackOptions(q = True, max = True)
+   
 
 anim_joints = get_joints_from_namespace("anim")
 char_joints = get_joints_from_namespace("character")
@@ -43,8 +41,9 @@ def match_joints():
 
 # create new scene
 maya.cmds.file(new = True, force = True)
+anim_number = 1
 char_path = "/Users/kaitlynbehrens/Documents/kaitlyn_maya_projects/maya_v2/scenes/sample_files/exercise/character.mb"
-anim_path = "/Users/kaitlynbehrens/Documents/kaitlyn_maya_projects/maya_v2/scenes/sample_files/exercise/animations/maya/01_01.ma"
+anim_path = "/Users/kaitlynbehrens/Documents/kaitlyn_maya_projects/maya_v2/scenes/sample_files/exercise/animations/maya/01_0{0}.ma".format(anim_number)
 
 # bring in character
 create_reference(char_path, "character")
@@ -53,9 +52,29 @@ create_reference(char_path, "character")
 create_reference(anim_path, "anim")
 
 # attach animation to character
-#maya.cmds.parentConstraint("anim:reference", "character:Reference", mo = True)
+maya.cmds.parentConstraint("anim:Hips", "character:Reference")
 match_joints()
 
+# bake animation onto joints
+start_time = maya.cmds.playbackOptions(q = True, min = True)
+end_time = maya.cmds.playbackOptions(q = True, max = True)
+maya.cmds.select(cl = True)
+maya.cmds.select(char_joints)
+maya.cmds.bakeResults(
+                        simulation = True,
+                        time = (start_time, end_time),
+                        sampleBy = 1,
+                        oversamplingRate = 1,
+                        disableImplicitControl = True,
+                        preserveOutsideKeys = True,
+                        sparseAnimCurveBake = False,
+                        removeBakedAnimFromLayer = False,
+                        bakeOnOverrideLayer = False,
+                        minimizeRotation = True,
+                        controlPoints = False,
+                        shape = True
+                       )
+                       
 # save file
 
 for i in anim_joints:

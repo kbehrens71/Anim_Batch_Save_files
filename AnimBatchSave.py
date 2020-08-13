@@ -60,31 +60,6 @@ def save_file(save_dir, anim_number):
     pymel.core.saveFile(f = True)      
 
 
-def run_single():
-    anim_number = 1
-    create_new_scene()
-    char_joints = bring_in_char()
-    anim_path, anim_joints = bring_in_anim(anim_number)
-    
-    # attach animation to character
-    set_start_frame()
-    connect_joints(char_joints, anim_joints)
-
-    pymel.core.select(cl = True)
-    pymel.core.select(char_joints)
-    pymel.core.viewFit(f = .8)
-        
-    pymel.core.bakeResults(  char_joints,
-                             simulation = True,
-                             time = (start_time, end_time),
-                             sampleBy = 1,
-                          )
-    
-    remove_anim_reference()
-    save_file(anim_number)
-    
-
-
 def run_batch(char, anim_dir, save_dir):
     anim_number = 1
     number_of_files = 10
